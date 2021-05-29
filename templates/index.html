@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" 
+            integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+    <title>Doggo - Dog breed detector</title>
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Doggo</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" href="https://github.com/besson/ds-capstone-project" target="_blank">Project</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="https://felipebesson.com" target="_blank">by Felipe Besson</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+    </nav>
+
+    <div class="bg-light p-2 rounded-lg m-3">
+        <h1 class="display-4 text-center">Doggo</h1>
+        <p class="lead text-center">Dog Breed detector</p>
+        <hr class="my-4">
+ 
+        <div class="container pb-4">
+            <div class="row">
+                <div class="col-12">
+                    <form action="/predict" method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-8">
+                                <label for="formFileLg" class="form-label">Find out the breed of your dog (be patient for big photos :P)</label>
+                                <input class="form-control form-control-lg" id="image" name="image" type="file">
+                            </div>
+                            <div class="col-4 pt-4">
+                                <button type="submit" class="btn btn-primary btn-lg mt-2">Upload</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if data %}
+        <div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-4">
+                        <figure class="figure">
+                            <img src="data:image/jpg;base64,{{ data['image']|safe }}" class="figure-img img-fluid rounded" width="296" height="228"/>
+                        </figure>
+                    </div>
+
+                    {% if data.get('success') %}
+                        {% set prediction = data.get('result')[0] %}
+                        <div class="col-8">             
+                                <p>It looks like you are similar to ...</p>
+                                <h3>{{ prediction.name }}</h3>
+
+                                {% if prediction.summary|length > 0 %}
+                                    <p class="lead">{{ prediction.summary|safe }}</p>
+                                {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="col-8">   
+                            <h3>Dog breed not found</h3>          
+                            <p class="lead">Sorry! Our models don't think this photo is a dog or a human face :p <br> Please try a photo without objects or with a better resolution.</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                {% if data.get('success') %}
+                    <div class="container pt-4">
+                        <div class="row p">
+                            {% if prediction.images|length > 0 %}
+                                <h4> {{ prediction.name }} photos</h4>
+                                <div class="container">
+                                    <div class="row">
+                                        <p class="lead">Photos by {{ prediction.image_src }}</p>
+                                        {% for image in prediction.images %}
+                                        <div class="col">
+                                            <figure class="figure">
+                                                <img src="{{ image }}" class="figure-img img-fluid rounded" width="296" height="228"/>
+                                            </figure>
+                                        </div>
+                                        {% endfor %}
+                                    </div>        
+                                </div>
+                            {% endif %}
+                        </div>
+                        <hr class="my-4">
+                    </div>
+               
+                    <div class="container pt-4">
+                        <div class="row">
+                            <h5> You also have chances to be similar to ...</h5>
+                            <div class="container">
+                                <div class="row">
+                                    {% for breed in data.get('result') %}
+                                    <div class="col">
+                                        <figure class="figure">
+                                            <img src="{{ breed.images[0] }}" class="figure-img img-fluid rounded img-thumbnail" width="50%" height="50%"/>
+                                        </figure>
+                                        <p>{{ breed.name }} : {{ breed.prob_display }}</p>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                {% endif %} 
+            </div>
+        </div>
+    {% endif %}
+</body>
+
+</html>
