@@ -7,17 +7,20 @@ from core import DogBreedDetector, DogDetector, HumanDetector, WikiClient, DogBr
 
 import io
 import base64
-
+import asyncio
 
 app = Flask(__name__)
 global dog_model, dog_breed_model, input_model, human_model, wiki_client, predictor
 
-input_model, dog_breed_model = DogBreedDetector().load_models()
-dog_model = DogDetector().load_model()
-human_model = HumanDetector().load_model()
-wiki_client = WikiClient()
-predictor = DogBreedPredictor(dog_model, dog_breed_model, input_model, human_model)
+async def init():
+    global dog_model, dog_breed_model, input_model, human_model, wiki_client, predictor
+    input_model, dog_breed_model = DogBreedDetector().load_models()
+    dog_model = DogDetector().load_model()
+    human_model = HumanDetector().load_model()
+    wiki_client = WikiClient()
+    predictor = DogBreedPredictor(dog_model, dog_breed_model, input_model, human_model)
 
+asyncio.run(init())
 
 
 @app.route('/')
