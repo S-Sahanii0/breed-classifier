@@ -10,18 +10,6 @@ import base64
 import asyncio
 
 app = Flask(__name__)
-global dog_model, dog_breed_model, input_model, human_model, wiki_client, predictor
-
-async def init():
-    global dog_model, dog_breed_model, input_model, human_model, wiki_client, predictor
-    input_model, dog_breed_model = DogBreedDetector().load_models()
-    dog_model = DogDetector().load_model()
-    human_model = HumanDetector().load_model()
-    wiki_client = WikiClient()
-    predictor = DogBreedPredictor(dog_model, dog_breed_model, input_model, human_model)
-
-asyncio.run(init())
-
 
 @app.route('/')
 @app.route('/index')
@@ -32,6 +20,11 @@ def index():
 @app.route("/predict", methods=["POST"])
 def predict():
     data = {"success": False}
+    input_model, dog_breed_model = DogBreedDetector().load_models()
+    dog_model = DogDetector().load_model()
+    human_model = HumanDetector().load_model()
+    wiki_client = WikiClient()
+    predictor = DogBreedPredictor(dog_model, dog_breed_model, input_model, human_model)
 
     if flask.request.method == "POST":
         if flask.request.files.get("image"):
