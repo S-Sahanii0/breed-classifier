@@ -1,1 +1,1 @@
-web: gunicorn wsgi:app
+web: gunicorn --timeout 90 --log-level debug wsgi:app
