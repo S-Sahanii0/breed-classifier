@@ -3,7 +3,7 @@ import os
 from flask import Flask
 from flask import render_template
 from PIL import Image
-from core import DogBreedDetector, DogDetector, HumanDetector, WikiClient, DogBreedPredictor, DogBreedResultsBuilder
+# from core import DogBreedDetector, DogDetector, HumanDetector, WikiClient, DogBreedPredictor, DogBreedResultsBuilder
 
 import io
 import base64
@@ -55,3 +55,7 @@ def predict():
             data['image'] = base64.b64encode(img_io.getvalue()).decode('ascii')
 
     return render_template('index.html', data=data)
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
