@@ -7,7 +7,6 @@ from core import DogBreedDetector, DogDetector, HumanDetector, WikiClient, DogBr
 
 import io
 import base64
-import asyncio
 
 app = Flask(__name__)
 
